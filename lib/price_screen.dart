@@ -13,18 +13,29 @@ class PriceScreen extends StatefulWidget {
 
 class _PriceScreenState extends State<PriceScreen> {
   //property to store the price of the coin
-  late int price = 0;
-  
+  late int pricebtc = 0;
+  late int priceeth = 0;
+  late int priceltc = 0;
+
   //Object for the of CurrencyModel class
   CurrencyModel currencyModel = CurrencyModel();
   //Variable to Update the currency name in the DropDownButton
   String selectCurrency = 'USD';
 
+  //updating price individually with if condition for each coin type
   void updatePrice(dynamic coinData) async {
     var data = await coinData;
     setState(() {
-      double priceInDouble = data['rate'];
-      price = priceInDouble.toInt();
+      if (data['asset_id_base'] == 'BTC') {
+        double priceInDouble = data['rate'];
+        pricebtc = priceInDouble.toInt();
+      } else if (data['asset_id_base'] == 'ETH') {
+        double priceInDouble = data['rate'];
+        priceeth = priceInDouble.toInt();
+      } else if (data['asset_id_base'] == 'LTC') {
+        double priceInDouble = data['rate'];
+        priceltc = priceInDouble.toInt();
+      }
     });
   }
 
@@ -49,8 +60,11 @@ class _PriceScreenState extends State<PriceScreen> {
         setState(() {
           selectCurrency = value!;
         });
-        var coinPrice = currencyModel.getCoinPrice('BTC', selectCurrency);
-        updatePrice(coinPrice);
+        //looping through the cryptoList to check price of each coin
+        for (String crypto in cryptoList) {
+          var coinPrice = currencyModel.getCoinPrice(crypto, selectCurrency);
+          updatePrice(coinPrice);
+        }
       },
     );
   }
@@ -113,7 +127,51 @@ class _PriceScreenState extends State<PriceScreen> {
               child: Padding(
                 padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
                 child: Text(
-                  '1 BTC = $price $selectCurrency',
+                  '1 BTC = $pricebtc $selectCurrency',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          //2nd card
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+            child: Card(
+              color: Colors.lightBlueAccent,
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                child: Text(
+                  '1 ETH = $priceeth $selectCurrency',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
+          ),
+          //3rd card
+          Padding(
+            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+            child: Card(
+              color: Colors.lightBlueAccent,
+              elevation: 5.0,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10.0),
+              ),
+              child: Padding(
+                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+                child: Text(
+                  '1 LTC = $priceltc $selectCurrency',
                   textAlign: TextAlign.center,
                   style: TextStyle(
                     fontSize: 20.0,
