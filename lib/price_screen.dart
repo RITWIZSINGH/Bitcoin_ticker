@@ -3,6 +3,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'coin_data.dart';
+import 'dart:io' show Platform;
 
 class PriceScreen extends StatefulWidget {
   @override
@@ -13,42 +14,78 @@ class _PriceScreenState extends State<PriceScreen> {
   //Variable to Update the currency name in the DropDownButton
   String selectCurrency = 'USD';
 
-  //function to make DropDownMenuItem of all the currencies
-  List<DropdownMenuItem> getDropDownItems() {
+  //Function that builds DropDown button for the android
+  DropdownButton androidDropDown() {
+    //and empty list to store all the list items
     List<DropdownMenuItem<String>> dropDownItems = [];
+    //This part get all the items from currenciesList
     for (int i = 0; i < currenciesList.length; i++) {
       //storing the currency of ith index in a string Currency
       String currency = currenciesList[i];
       var newItem = DropdownMenuItem(child: Text(currency), value: currency);
       dropDownItems.add(newItem);
     }
-    return dropDownItems;
+
+    // returning the dropDownButton
+    return DropdownButton(
+      value: selectCurrency,
+      items: dropDownItems,
+      //changing the selected value from the DropDown list to showcase on the button
+      onChanged: (value) {
+        setState(() {
+          selectCurrency = value!;
+        });
+      },
+    );
   }
 
-  // List<Widget> getCupertinoItems() {
-  //   List<Widget> cupertinoItems = [];
-  //   for (String currency in currenciesList) {
-  //     var newcupertinoItem = Text(currency);
-  //     cupertinoItems.add(newcupertinoItem);
-  //   }
+  //Function that builds a picker for iOS
+  CupertinoPicker iOSpicker() {
+    //and empty list to store all the list items
+    List<Widget> cupertinoItems = [];
+    //This part get all the items from currenciesList
+    for (String currency in currenciesList) {
+      var newcupertinoItem = Text(currency);
+      cupertinoItems.add(newcupertinoItem);
+    }
 
-  //   return cupertinoItems;
-  // }
+    //returning the cupertino picker
+    return CupertinoPicker(
+      looping: true,
+      children: cupertinoItems,
+      itemExtent: 32.0,
+      onSelectedItemChanged: (selectedIndex) {
+        print(selectedIndex);
+      },
+    );
+  }
+
+  //Function that builds the dropdown or the picker based on the platform
+  Widget? getPicker() {
+    //if the platform is ios, it builds the iospicker
+    if (Platform.isIOS) {
+      return iOSpicker();
+    } // if the platform is Android, it builds the androidDropDownButton
+    else if (Platform.isAndroid) {
+      return androidDropDown();
+    }
+    return null;
+  }
 
   @override
   Widget build(BuildContext context) {
-    //calling the menuItem builder function when the build is called
-    getDropDownItems();
     return Scaffold(
       //Appbar
       appBar: AppBar(
         backgroundColor: Colors.lightBlueAccent,
         title: Center(child: Text('🤑 Coin Ticker')),
       ),
+      //Column to store multiple widgets
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
+          //this is the card widget
           Padding(
             padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
             child: Card(
@@ -70,35 +107,16 @@ class _PriceScreenState extends State<PriceScreen> {
               ),
             ),
           ),
+          //This container is for DropDownButton or the Picker
           Container(
-            height: 150.0,
-            alignment: Alignment.center,
-            padding: EdgeInsets.only(bottom: 30.0),
-            color: Colors.lightBlue,
-            //DropDownbutton
-            child: DropdownButton(
-              value: selectCurrency,
-              items: getDropDownItems(),
-              //changing the selected value from the DropDown list
-              onChanged: (value) {
-                setState(() {
-                  selectCurrency = value!;
-                });
-              },
-            ),
-          ),
+              height: 150.0,
+              alignment: Alignment.center,
+              padding: EdgeInsets.only(bottom: 30.0),
+              color: Colors.lightBlue,
+              //calling getPicker function to build the button according to the platform
+              child: getPicker()),
         ],
       ),
     );
   }
 }
-
-
-// CupertinoPicker(
-//                 looping: true,
-//                 children: getCupertinoItems(),
-//                 itemExtent: 32.0,
-//                 onSelectedItemChanged: (selectedIndex) {
-//                   print(selectedIndex);
-//                 },
-        //      )
