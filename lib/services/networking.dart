@@ -4,9 +4,11 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class NetworkHelper{
+  //creating a constructor with parameter for an URL
   NetworkHelper(this.url);
   final String url;
-
+  
+  //'getData' function to get the result from the api call using 'get' function
   Future getData() async {
     http.Response response = await http.get(Uri.parse(url));
 

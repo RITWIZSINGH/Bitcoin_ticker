@@ -1,3 +1,4 @@
+//List of currencies
 const List<String> currenciesList = [
   'AUD',
   'BRL',
@@ -22,6 +23,7 @@ const List<String> currenciesList = [
   'ZAR'
 ];
 
+//List of crypto currencies
 const List<String> cryptoList = [
   'BTC',
   'ETH',
