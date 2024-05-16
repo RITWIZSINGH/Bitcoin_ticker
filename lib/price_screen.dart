@@ -12,7 +12,7 @@ class PriceScreen extends StatefulWidget {
 }
 
 class _PriceScreenState extends State<PriceScreen> {
-  //property to store the price of the coin
+  //property to store the price of the coins
   late int pricebtc = 0;
   late int priceeth = 0;
   late int priceltc = 0;
@@ -21,6 +21,31 @@ class _PriceScreenState extends State<PriceScreen> {
   CurrencyModel currencyModel = CurrencyModel();
   //Variable to Update the currency name in the DropDownButton
   String selectCurrency = 'USD';
+
+  //Function to return the crypto currency cards
+  Padding buildcard({required String cryptoType, required int cryptoPrice}) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
+      child: Card(
+        color: Colors.lightBlueAccent,
+        elevation: 5.0,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0),
+        ),
+        child: Padding(
+          padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
+          child: Text(
+            '1 $cryptoType = $cryptoPrice $selectCurrency',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 20.0,
+              color: Colors.white,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 
   //updating price individually with if condition for each coin type
   void updatePrice(dynamic coinData) async {
@@ -81,11 +106,20 @@ class _PriceScreenState extends State<PriceScreen> {
 
     //returning the cupertino picker
     return CupertinoPicker(
-      looping: true,
       children: cupertinoItems,
       itemExtent: 32.0,
       onSelectedItemChanged: (selectedIndex) {
-        print(selectedIndex);
+        setState(() {
+          //selectcurrency changes the value according to the 'selectedindex'
+          selectCurrency = currenciesList[selectedIndex];
+        });
+        //Looping through the cryptoList for the coin
+        for (String crypto in cryptoList) {
+          // 'coinPrice' variable to store the value obtained for a coin in a selected currency
+          var coinPrice = currencyModel.getCoinPrice(crypto, selectCurrency);
+          //passing the 'coinPrice' variable to 'updatePrice' function to change the value according to the cryptocurrency and the currency selected
+          updatePrice(coinPrice);
+        }
       },
     );
   }
@@ -115,72 +149,12 @@ class _PriceScreenState extends State<PriceScreen> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: <Widget>[
-          //this is the card widget
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 BTC = $pricebtc $selectCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          //this is the 1st card widget
+          buildcard(cryptoType: 'BTC', cryptoPrice: pricebtc),
           //2nd card
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 ETH = $priceeth $selectCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          buildcard(cryptoType: 'ETH', cryptoPrice: priceeth),
           //3rd card
-          Padding(
-            padding: EdgeInsets.fromLTRB(18.0, 18.0, 18.0, 0),
-            child: Card(
-              color: Colors.lightBlueAccent,
-              elevation: 5.0,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10.0),
-              ),
-              child: Padding(
-                padding: EdgeInsets.symmetric(vertical: 15.0, horizontal: 28.0),
-                child: Text(
-                  '1 LTC = $priceltc $selectCurrency',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.white,
-                  ),
-                ),
-              ),
-            ),
-          ),
+          buildcard(cryptoType: 'LTC', cryptoPrice: priceltc),
           //This container is for DropDownButton or the Picker
           Container(
               height: 150.0,
